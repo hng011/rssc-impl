@@ -1,0 +1,6 @@
+.venv
+.env
+.dockerignore
+__pycache__
+
+models/*
