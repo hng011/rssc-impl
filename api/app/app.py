@@ -34,28 +34,31 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     models_path = "./models/"
-    
-    if not os.path.isdir(models_path):
-        os.makedirs(models_path)
-        
-    if len(os.listdir(models_path)) < 1:
-        load_dotenv()
+    if not PROD == "no":
+        if not os.path.isdir(models_path):
+            os.makedirs(models_path)
+            
+        if len(os.listdir(models_path)) < 1:
+            load_dotenv()
+                    
+            print("INFO:\tDownloading models...")
+            
+            try:
+                start_t = time.time()
+                r = requests.get(os.getenv("MODELS_URL"))
                 
-        print("INFO: Downloading models...")
-        
-        try:
-            r = requests.get(os.getenv("MODELS_URL"))
+                with tarfile.open(fileobj=io.BytesIO(r.content), mode="r:gz") as tar:
+                    tar.extractall(models_path)
+                download_t = time.time() - start_t
+                
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))        
             
-            with tarfile.open(fileobj=io.BytesIO(r.content), mode="r:gz") as tar:
-                tar.extractall(models_path)
-            
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))        
+            print(f"INFO:\tSuccessfully downloaded the models | {download_t:.2f} seconds")
         
-        print("INFO: Models are downloaded")
-    
-    else:
-        print("INFO: Models are ready")
+        else:
+            print("INFO:\tModels ready")
+
 
 # === REQUEST SCHEMA ===
 class PredictRequest(BaseModel):
@@ -77,15 +80,11 @@ def predict(request: PredictRequest):
 
     try:
         model = load_model(request.model_selection, prod=PROD)
-
-        start_infer_t = time.time()
         pred, acc_score = predict_image(request.image_data, model)
-        end_infer_t = time.time() - start_infer_t
         
         return {
             "pred": pred,
             "acc_score": f"{acc_score:.2f}%",
-            "infer_time": f"{end_infer_t:.2f} Seconds"
         }
 
     except Exception as e:

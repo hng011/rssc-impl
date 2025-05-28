@@ -1,10 +1,12 @@
 import streamlit as st
 import requests
 import base64
+import time
 from PIL import Image
 import io
 import os
 from dotenv import load_dotenv
+
 
 
 load_dotenv()
@@ -13,6 +15,7 @@ load_dotenv()
 def get_prediction(model_selection, img_b64):
     API_URL = os.getenv("LOCAL_ENDPOINT") if os.getenv("PROD").lower() == "no" else os.getenv("PROD_ENDPOINT")
     
+    start_t = time.time()
     response = requests.post(
         API_URL, 
         json={
@@ -21,12 +24,13 @@ def get_prediction(model_selection, img_b64):
             "api_auth": os.getenv("API_AUTH"),
         }
     )
+    infer_time = time.time() - start_t
 
     if response.status_code == 200:
         data = response.json()
         st.write(f"🔎 PREDICTION\t: {data.get("pred")}")
         st.write(f"📏 ACCURACY\t: {data.get("acc_score")}")
-        st.write(f"⏳ INFERENCE TIME\t: {data.get("infer_time")}")
+        st.write(f"⏳ INFERENCE TIME\t: {infer_time:.2f} seconds")
     else:
         st.error(f"API Error: {response.status_code}")
 
