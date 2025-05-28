@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import os
+import io
+import time
+import tarfile
+import requests
 from dotenv import load_dotenv
 
 from utils import (
@@ -27,6 +31,32 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+async def startup_event():
+    models_path = "./models/"
+    
+    if not os.path.isdir(models_path):
+        os.makedirs(models_path)
+        
+    if len(os.listdir(models_path)) < 1:
+        load_dotenv()
+                
+        print("INFO: Downloading models...")
+        
+        try:
+            r = requests.get(os.getenv("MODELS_URL"))
+            
+            with tarfile.open(fileobj=io.BytesIO(r.content), mode="r:gz") as tar:
+                tar.extractall(models_path)
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))        
+        
+        print("INFO: Models are downloaded")
+    
+    else:
+        print("INFO: Models are ready")
+
 # === REQUEST SCHEMA ===
 class PredictRequest(BaseModel):
     model_selection: str
@@ -48,12 +78,14 @@ def predict(request: PredictRequest):
     try:
         model = load_model(request.model_selection, prod=PROD)
 
-        pred, acc_score, infer_time = predict_image(request.image_data, model)
-
+        start_infer_t = time.time()
+        pred, acc_score = predict_image(request.image_data, model)
+        end_infer_t = time.time() - start_infer_t
+        
         return {
             "pred": pred,
             "acc_score": f"{acc_score:.2f}%",
-            "infer_time": f"{infer_time:.2f} Seconds"
+            "infer_time": f"{end_infer_t:.2f} Seconds"
         }
 
     except Exception as e:
