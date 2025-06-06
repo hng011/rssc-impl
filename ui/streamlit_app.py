@@ -8,12 +8,11 @@ import os
 from dotenv import load_dotenv
 
 
-
 load_dotenv()
 
 
 def get_prediction(model_selection, img_b64):
-    API_URL = os.getenv("LOCAL_ENDPOINT") if os.getenv("PROD").lower() == "no" else os.getenv("PROD_ENDPOINT")
+    API_URL = os.getenv("ENDPOINT")
     
     start_t = time.time()
     response = requests.post(
