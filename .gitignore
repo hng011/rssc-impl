@@ -4,3 +4,7 @@
 __pycache__
 
 api/app/models
+
+mlruns
+--default-artifact-root
+*.db
