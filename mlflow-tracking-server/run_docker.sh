@@ -28,7 +28,7 @@ done
 echo "running ${MLFLOW_DOCKER_IMAGE}:${MLFLOW_DOCKER_IMAGE_TAG}"
 
 docker run --env-file .env \
-    -p 8080:${MLFLOW_PORT} \
+    -p ${HOST_PORT}:${MLFLOW_PORT} \
     -e MLFLOW_PORT=${MLFLOW_PORT} \
     -e BACKEND_STORE_URI="${BACKEND_STORE_URI}" \
     -e ARTIFACT_ROOT="${ARTIFACT_ROOT}" \
