@@ -2,7 +2,7 @@ services:
   mlflow-tracking-server:
     build: .
     ports:
-      - ${MLFLOW_PORT}:${MLFLOW_PORT}
+      - ${HOST_PORT}:${MLFLOW_PORT}
     volumes:
       - ./mlruns:/mlruns
       - ./${db_name}:/${db_name}
