@@ -1,0 +1,10 @@
+services:
+  mlflow-tracking-server:
+    build: .
+    ports:
+      - ${MLFLOW_PORT}:${MLFLOW_PORT}
+    volumes:
+      - ./mlruns:/mlruns
+      - ./${db_name}:/${db_name}
+    env_file:
+      - .env
