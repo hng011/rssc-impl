@@ -1,10 +1,11 @@
-
-FROM ghcr.io/mlflow/mlflow:v2.22.0
+FROM python:3.12.8
 
 WORKDIR /app 
 
-COPY . .
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
+COPY init.sh .
 RUN chmod +x init.sh
 
 EXPOSE 8080

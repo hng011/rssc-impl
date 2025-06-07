@@ -2,23 +2,20 @@
 
 source .env
 
-while getopts "e:" opt; do
+VERSION=""
+
+while getopts "t:" opt; do
   case $opt in
-    e)
-      VAR_NAME=${OPTARG}
-      shift $((OPTIND - 1))
-      VALUE=$1
-      if [ -n "$VAR_NAME" ] && [ -n "$VALUE" ]; then
-        export "$VAR_NAME"="$VALUE"
-        echo "Setting $VAR_NAME TO $VALUE"
-        shift
-      else
-        echo "Usage: -e VAR_NAME VALUE"
-        exit 1
-      fi
+    t)
+      VERSION="$OPTARG"
+      echo "Version set to: $VERSION"
       ;;
-    *)
-      echo "Invalid option"
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
       exit 1
       ;;
   esac
@@ -26,6 +23,8 @@ done
 
 az acr login --name ${AZURE_REGISTERY_NAME}
 
-echo "Pushing ${MLFLOW_DOCKER_IMAGE}:${MLFLOW_DOCKER_IMAGE_TAG} to Azure ${AZURE_REGISTERY_NAME}.azurecr.io"
+echo "Pushing ${LOCAL_REPO}/${IMAGE_NAME}:$VERSION to ${ACR_REPO}/${IMAGE_NAME}:$VERSION"
+docker push ${ACR_REPO}/${IMAGE_NAME}:$VERSION
 
-docker push ${MLFLOW_DOCKER_IMAGE}:${MLFLOW_DOCKER_IMAGE_TAG}
+echo "Pushing ${LOCAL_REPO}/${IMAGE_NAME}:latest to ${ACR_REPO}/${IMAGE_NAME}:latest"
+docker push ${ACR_REPO}/${IMAGE_NAME}:latest
