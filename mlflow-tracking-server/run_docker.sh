@@ -4,7 +4,7 @@ source .env
 
 echo "running ${LOCAL_REPO}/${IMAGE_NAME}:latest"
 
-docker run --env-file .env \
+docker run -it --env-file .env \
     -p ${HOST_PORT}:${MLFLOW_PORT} \
     -e MLFLOW_PORT=${MLFLOW_PORT} \
     -e BACKEND_STORE_URI="${BACKEND_STORE_URI}" \

@@ -37,7 +37,7 @@ def get_prediction(model_selection, img_b64):
 if __name__ == "__main__":
     st.title("🛰️ Remote Sensing Scene Classification Implementation")
 
-    MODEL_OPTIONS = {"ResNet50-V2":'1', "Visual Transformer (ViT)":'1', "ConvNeXt-Tiny":'3'}
+    MODEL_OPTIONS = {"ResNet50-V2":'1', "ConvNeXt-Tiny":'2', "Visual Transformer (ViT)":'3'}
 
     model_selection = st.selectbox("🤖 Model Selection", list(MODEL_OPTIONS.keys()))
     uploaded_file = st.file_uploader("🖼️ Upload an Image", type=["jpg", "jpeg", "png"])

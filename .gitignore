@@ -8,3 +8,4 @@ api/app/models
 mlruns
 --default-artifact-root
 *.db
+models
