@@ -12,7 +12,7 @@ load_dotenv()
 
 
 def get_prediction(model_selection, img_b64):
-    API_URL = os.getenv("ENDPOINT")
+    API_URL = os.getenv("ENDPOINT_API-TF2180")
     
     start_t = time.time()
     response = requests.post(
