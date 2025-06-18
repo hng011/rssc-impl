@@ -12,11 +12,12 @@ load_dotenv()
 
 
 def get_prediction(model_selection, img_b64):
-    API_URL = os.getenv("ENDPOINT_API-TF2180")
+    API_URL_TF2180 = os.getenv("ENDPOINT_API-TF2180")
+    API_URL_TRANSFORMERS4524 = os.getenv("ENDPOINT_TRANSFORMERS4524")
     
     start_t = time.time()
     response = requests.post(
-        API_URL, 
+        API_URL_TRANSFORMERS4524 if model_selection=='3' else API_URL_TF2180, 
         json={
             "model_selection": model_selection,
             "image_data": img_b64,
