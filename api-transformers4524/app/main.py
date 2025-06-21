@@ -11,6 +11,7 @@ from mlflow.client import MlflowClient
 from dotenv import load_dotenv
 
 from utils import predict_image
+from transformers import ViTFeatureExtractor
 
 
 load_dotenv()
@@ -19,7 +20,7 @@ API_AUTH = os.getenv("API_AUTH")
 VERSION = os.getenv("VERSION")
 
 
-app = FastAPI(title="API for RSSC with TensorFlow 2.18.0", version=VERSION)
+app = FastAPI(title="API for RSSC with Transformers 4.52.4", version=VERSION)
 app.add_middleware(
     CORSMiddleware,
     allow_origins       = os.getenv("ALLOW_ORIGINS"),
@@ -32,7 +33,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     
-    global models
+    global models, fe
                 
     print("INFO:\tDownloading models...")
         
@@ -44,15 +45,13 @@ async def startup_event():
         mlflow.set_experiment(os.getenv("EXPERIMENT_RUN_NAME"))
         
         run_ids = [
-            os.getenv("MLFLOW_BEST_RESNET50V2_RUNID"), 
-            os.getenv("MLFLOW_BEST_CONVNEXTTINY_RUNID")
+            os.getenv("MLFLOW_BEST_VIT_RUNID"), 
         ]
         
         client = MlflowClient()
         
         models = {
-            '1': None,
-            '2': None,
+            '3': None,
         }
         
         for k, x in zip(models, run_ids):
@@ -73,11 +72,23 @@ async def startup_event():
         download_t = time.time() - start_dt 
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))        
         
-    print(f"INFO:\tSuccessfully downloaded the models | {download_t:.2f} seconds")
+    print(f"INFO:\t Successfully downloaded the models | {download_t:.2f} seconds")
     print(f"INFO:\t list model {models}")
+    # Download feature extractor
+    print("INFO:\tDownloading VIT feature extractor...")
+    
+    try:
+        start_dt = time.time()
+        fe = ViTFeatureExtractor.from_pretrained("google/vit-base-patch16-224")
+        download_t = time.time() - start_dt
+        print(f"INFO:\tSuccessfully downloaded the VIT feature extractor | {(download_t):.2f} seconds")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+            
 
+    
 # === REQUEST SCHEMA ===
 class PredictRequest(BaseModel):
     model_selection: str
@@ -88,7 +99,7 @@ class PredictRequest(BaseModel):
 # === ROUTES ===
 @app.get("/")
 async def root():
-    return {"name":app.title, "status": "success", "msg": "ready for inference", "version": app.version}
+    return {"name": app.title, "status": "success", "msg": "ready for inference", "version": app.version}
 
 
 @app.post("/predict")
@@ -97,7 +108,7 @@ def predict(request: PredictRequest):
         raise HTTPException(status_code=401, detail="Unauthorized Access :p")
 
     try:
-        pred, acc_score = predict_image(request.image_data, models[request.model_selection])
+        pred, acc_score = predict_image(request.image_data, models[request.model_selection], feature_extractor=fe)
         
         return {
             "pred": pred,
