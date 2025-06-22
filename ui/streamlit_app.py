@@ -30,6 +30,7 @@ def get_prediction(model_selection, img_b64):
         data = response.json()
         st.write(f"🔎 PREDICTION\t: {data.get("pred")}")
         st.write(f"📏 ACCURACY\t: {data.get("acc_score")}")
+        st.write(f"🤖 Model\t: {data.get("model_name")}")
         st.write(f"⏳ INFERENCE TIME\t: {infer_time:.2f} seconds")
     else:
         st.error(f"API Error: {response.status_code}")

@@ -32,7 +32,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     
-    global models
+    global models, model_names
                 
     print("INFO:\tDownloading models...")
         
@@ -55,28 +55,34 @@ async def startup_event():
             '2': None,
         }
         
+        model_names = {k: None for k in models.keys()}
+        
         for k, x in zip(models, run_ids):
             dst_path = f"./models/model{x[:5]}"
-            is_model_ready = len(os.listdir("models"))
+            is_model_ready = os.path.exists(dst_path)
             
-            print(f"INFO:\t {client.list_artifacts(run_id=x)}")
-            print(f"INFO:\t Downloading artifacts for run {x} to {dst_path}")
-            
+            model_atr = client.search_model_versions(f"run_id='{x}'")
+            for atr in model_atr:
+                model_names[k] = f"{atr.name}_v{atr.version}"
+
+            print(f"INFO:\t Downloading artifacts for {model_names[k]} to {dst_path}")
             
             if not is_model_ready:
+                print(f"INFO: Creating {dst_path}")
                 path = download_artifacts(run_id=x, artifact_path="model", dst_path=dst_path)
             else:
                 print("INFO:\t Models ready :)")
             
             models[k] = mlflow.tensorflow.load_model(f"{dst_path}/model" if is_model_ready else path)
-            
+                
         download_t = time.time() - start_dt 
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) 
         
     print(f"INFO:\tSuccessfully downloaded the models | {download_t:.2f} seconds")
-    print(f"INFO:\t list model {models}")
+    print(f"INFO:\t list model {model_names}")
+    
 
 # === REQUEST SCHEMA ===
 class PredictRequest(BaseModel):
@@ -88,7 +94,7 @@ class PredictRequest(BaseModel):
 # === ROUTES ===
 @app.get("/")
 async def root():
-    return {"name":app.title, "status": "success", "msg": "ready for inference", "version": app.version}
+    return {"name":app.title, "status": "success", "msg": "ready for inference", "available_model":model_names, "version": app.version}
 
 
 @app.post("/predict")
@@ -102,6 +108,7 @@ def predict(request: PredictRequest):
         return {
             "pred": pred,
             "acc_score": f"{acc_score:.2f}%",
+            "model_name": model_names[request.model_selection]
         }
 
     except Exception as e:

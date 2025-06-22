@@ -33,7 +33,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     
-    global models, fe
+    global models, model_names, fe
                 
     print("INFO:\tDownloading models...")
         
@@ -53,23 +53,28 @@ async def startup_event():
         models = {
             '3': None,
         }
+
+        model_names = {k: None for k in models.keys()}
         
         for k, x in zip(models, run_ids):
             dst_path = f"./models/model{x[:5]}"
-            is_model_ready = len(os.listdir("models"))
+            is_model_ready = os.path.exists(dst_path)
             
-            print(f"INFO:\t {client.list_artifacts(run_id=x)}")
-            print(f"INFO:\t Downloading artifacts for run {x} to {dst_path}")
-            
+            model_atr = client.search_model_versions(f"run_id='{x}'")
+            for atr in model_atr:
+                model_names[k] = f"{atr.name}_v{atr.version}"
+
+            print(f"INFO:\t Downloading artifacts for {model_names[k]} to {dst_path}")
             
             if not is_model_ready:
+                print(f"INFO: Creating {dst_path}")
                 path = download_artifacts(run_id=x, artifact_path="model", dst_path=dst_path)
             else:
                 print("INFO:\t Models ready :)")
             
             models[k] = mlflow.tensorflow.load_model(f"{dst_path}/model" if is_model_ready else path)
-            
-        download_t = time.time() - start_dt 
+                
+        download_t = time.time() - start_dt
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))        
@@ -99,7 +104,7 @@ class PredictRequest(BaseModel):
 # === ROUTES ===
 @app.get("/")
 async def root():
-    return {"name": app.title, "status": "success", "msg": "ready for inference", "version": app.version}
+    return {"name":app.title, "status": "success", "msg": "ready for inference", "available_model":model_names, "version": app.version}
 
 
 @app.post("/predict")
@@ -108,11 +113,12 @@ def predict(request: PredictRequest):
         raise HTTPException(status_code=401, detail="Unauthorized Access :p")
 
     try:
-        pred, acc_score = predict_image(request.image_data, models[request.model_selection], feature_extractor=fe)
+        pred, acc_score = predict_image(request.image_data, models[request.model_selection])
         
         return {
             "pred": pred,
             "acc_score": f"{acc_score:.2f}%",
+            "model_name": model_names[request.model_selection]
         }
 
     except Exception as e:
