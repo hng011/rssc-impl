@@ -1,6 +1,5 @@
 .venv
 .env
-.dockerignore
 __pycache__
 
 api/app/models
