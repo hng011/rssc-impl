@@ -113,7 +113,7 @@ def predict(request: PredictRequest):
         raise HTTPException(status_code=401, detail="Unauthorized Access :p")
 
     try:
-        pred, acc_score = predict_image(request.image_data, models[request.model_selection])
+        pred, acc_score = predict_image(request.image_data, models[request.model_selection], feature_extractor=fe)
         
         return {
             "pred": pred,
