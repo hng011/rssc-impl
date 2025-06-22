@@ -9,3 +9,5 @@ mlruns
 --default-artifact-root
 *.db
 models
+
+.ipynb_checkpoints
