@@ -51,18 +51,18 @@ if __name__ == "__main__":
         with cols[0]:
             st.image(image, caption="Uploaded Image", width=256)
         
-        try:
-            buffered = io.BytesIO()
-            image.save(buffered, format="JPEG")
-            img_bytes = buffered.getvalue()
-            img_b64 = base64.b64encode(img_bytes).decode("utf-8")
-        except Exception as E:
-            st.error(E)
-
-        if st.button("Classify"):
-            with cols[1]:
-                with st.spinner("Predicting..."):
-                    try:
-                        get_prediction(MODEL_OPTIONS[model_selection], img_b64)
-                    except Exception as e:
-                        st.error(f"Request failed: {e}")
+        with cols[1]:
+            if st.button("Classify"):
+                try:
+                    buffered = io.BytesIO()
+                    image.save(buffered, format="JPEG")
+                    img_bytes = buffered.getvalue()
+                    img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+                except Exception as E:
+                    st.error(E)
+        
+                        with st.spinner("Predicting..."):
+                            try:
+                                get_prediction(MODEL_OPTIONS[model_selection], img_b64)
+                            except Exception as e:
+                                st.error(f"Request failed: {e}")
