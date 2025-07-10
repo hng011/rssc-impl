@@ -59,7 +59,7 @@ if __name__ == "__main__":
                 st.session_state["classify"] = True
             
         with cols[2]:
-            if st.session_state["classify"] == True:
+            if st.session_state.get("classify", False):
                 try:
                     img_b64 = st.session_state["img_b64"]
                     with st.spinner("Predicting..."):
