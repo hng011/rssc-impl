@@ -53,13 +53,13 @@ if __name__ == "__main__":
 
             st.markdown(
                 """
-                <div style='display: flex; flex-direction: column; align-items: center;'>
-                <style>
-                    div.stButton {
-                        display: flex;
-                        justify-content: center;
-                    }
-                </style>
+                <div>
+                    <style>
+                        div.stButton {
+                            display: flex;
+                            justify-content: center;
+                        }
+                    </style>
                 """,
                 unsafe_allow_html=True
             )
