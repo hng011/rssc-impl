@@ -46,7 +46,10 @@ if __name__ == "__main__":
     
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
-        st.image(image, caption="Uploaded Image", width=256)
+        
+        cols = st.columns([1, 2, 1]) 
+        with cols[1]:
+            st.image(image, caption="Uploaded Image", width=256)
         
         try:
             buffered = io.BytesIO()
