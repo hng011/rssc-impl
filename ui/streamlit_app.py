@@ -50,15 +50,17 @@ if __name__ == "__main__":
         cols = st.columns([1, 2, 2]) 
         with cols[1]:
             st.image(image, caption="Uploaded Image", width=256)
+            
             st.markdown(
                 """
                 <style>
-                    div.stButton > button {
-                        display: flex;
-                        justify-content: center;
-                        margin: auto;
-                        width: 200px;
-                    }
+                div.stButton {
+                    display: flex;
+                    justify-content: center;
+                }
+                div.stButton button {
+                    width: 200px;
+                }
                 </style>
                 """,
                 unsafe_allow_html=True
