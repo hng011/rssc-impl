@@ -47,12 +47,13 @@ if __name__ == "__main__":
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
         
-        cols = st.columns([2, 3]) 
-        with cols[0]:
-            st.image(image, caption="Uploaded Image", width=256)
-        
+        cols = st.columns([1, 2, 2]) 
         with cols[1]:
-            if st.button("Classify"):
+            st.image(image, caption="Uploaded Image", width=256)
+            clf_btn = st.button("Classify")
+            
+        with cols[2]:
+            if clf_btn:
                 try:
                     buffered = io.BytesIO()
                     image.save(buffered, format="JPEG")
