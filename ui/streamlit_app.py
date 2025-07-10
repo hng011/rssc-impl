@@ -59,9 +59,6 @@ if __name__ == "__main__":
                         display: flex;
                         justify-content: center;
                     }
-                    div.stButton button {
-                    width: 200px;
-                    }
                 </style>
                 """,
                 unsafe_allow_html=True
