@@ -50,17 +50,18 @@ if __name__ == "__main__":
         cols = st.columns([1, 2, 2]) 
         with cols[1]:
             st.image(image, caption="Uploaded Image", width=256)
-            
+
             st.markdown(
                 """
+                <div style='display: flex; flex-direction: column; align-items: center;'>
                 <style>
-                div.stButton {
-                    display: flex;
-                    justify-content: center;
-                }
-                div.stButton button {
+                    div.stButton {
+                        display: flex;
+                        justify-content: center;
+                    }
+                    div.stButton button {
                     width: 200px;
-                }
+                    }
                 </style>
                 """,
                 unsafe_allow_html=True
@@ -73,6 +74,8 @@ if __name__ == "__main__":
                 img_b64 = base64.b64encode(img_bytes).decode("utf-8")
                 st.session_state["img_b64"] = img_b64
                 st.session_state["classify"] = True
+                
+            st.markdown("</div>", unsafe_allow_html=True)
             
         with cols[2]:
             if st.session_state.get("classify", False):
