@@ -50,13 +50,15 @@ if __name__ == "__main__":
         cols = st.columns([1, 2, 2]) 
         with cols[1]:
             st.image(image, caption="Uploaded Image", width=256)
-            if st.button("Classify"):
-                buffered = io.BytesIO()
-                image.save(buffered, format="JPEG")
-                img_bytes = buffered.getvalue()
-                img_b64 = base64.b64encode(img_bytes).decode("utf-8")
-                st.session_state["img_b64"] = img_b64
-                st.session_state["classify"] = True
+            btn_plc = st.columns([1, 2, 1]) 
+            with btn_plc[1]:
+                if st.button("Classify"):
+                    buffered = io.BytesIO()
+                    image.save(buffered, format="JPEG")
+                    img_bytes = buffered.getvalue()
+                    img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+                    st.session_state["img_b64"] = img_b64
+                    st.session_state["classify"] = True
             
         with cols[2]:
             if st.session_state.get("classify", False):
