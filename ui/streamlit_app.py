@@ -54,15 +54,16 @@ if __name__ == "__main__":
             st.markdown(
                 """
                 <div style="margin: 0; padding: 0; display: flex; justify-content: center;">
-                <style>
-                    div.stButton {
-                        margin: 0;
-                        padding: 0;
-                        display: flex;
-                        justify-content: center;
-                        width: 100%;
-                    }
-                </style>
+                    <style>
+                        div.stButton {
+                            margin: 0;
+                            padding: 0;
+                            display: flex;
+                            justify-content: center;
+                            width: 100%;
+                        }
+                    </style>
+                </div>
                 """,
                 unsafe_allow_html=True
             )
@@ -74,8 +75,6 @@ if __name__ == "__main__":
                 img_b64 = base64.b64encode(img_bytes).decode("utf-8")
                 st.session_state["img_b64"] = img_b64
                 st.session_state["classify"] = True
-                
-            st.markdown("</div>", unsafe_allow_html=True)
             
         with cols[2]:
             if st.session_state.get("classify", False):
