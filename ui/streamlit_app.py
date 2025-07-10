@@ -83,6 +83,7 @@ if __name__ == "__main__":
                     with st.spinner("Predicting..."):
                         try:
                             get_prediction(MODEL_OPTIONS[model_selection], img_b64)
+                            st.session_state["classify"] = False
                         except Exception as e:
                             st.error(f"Request failed: {e}")
                 except Exception as E:
