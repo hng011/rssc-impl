@@ -50,7 +50,7 @@ if __name__ == "__main__":
         cols = st.columns([1, 2, 2]) 
         with cols[1]:
             st.image(image, caption="Uploaded Image", width=256)
-            clf_btn = st.button("Classify")
+            # clf_btn = st.button("Classify")
             
         with cols[2]:
             if clf_btn:
