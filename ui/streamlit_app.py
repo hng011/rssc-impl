@@ -58,11 +58,11 @@ if __name__ == "__main__":
                     image.save(buffered, format="JPEG")
                     img_bytes = buffered.getvalue()
                     img_b64 = base64.b64encode(img_bytes).decode("utf-8")
+
+                    with st.spinner("Predicting..."):
+                        try:
+                            get_prediction(MODEL_OPTIONS[model_selection], img_b64)
+                        except Exception as e:
+                            st.error(f"Request failed: {e}")
                 except Exception as E:
                     st.error(E)
-        
-                        with st.spinner("Predicting..."):
-                            try:
-                                get_prediction(MODEL_OPTIONS[model_selection], img_b64)
-                            except Exception as e:
-                                st.error(f"Request failed: {e}")
