@@ -47,8 +47,8 @@ if __name__ == "__main__":
     if uploaded_file is not None:
         image = Image.open(uploaded_file).convert("RGB")
         
-        cols = st.columns([1, 2, 1]) 
-        with cols[1]:
+        cols = st.columns([2, 3]) 
+        with cols[0]:
             st.image(image, caption="Uploaded Image", width=256)
         
         try:
@@ -60,8 +60,9 @@ if __name__ == "__main__":
             st.error(E)
 
         if st.button("Classify"):
-            with st.spinner("Predicting..."):
-                try:
-                    get_prediction(MODEL_OPTIONS[model_selection], img_b64)
-                except Exception as e:
-                    st.error(f"Request failed: {e}")
+            with cols[1]:
+                with st.spinner("Predicting..."):
+                    try:
+                        get_prediction(MODEL_OPTIONS[model_selection], img_b64)
+                    except Exception as e:
+                        st.error(f"Request failed: {e}")
