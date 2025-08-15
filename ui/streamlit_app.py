@@ -12,8 +12,8 @@ load_dotenv()
 
 
 def get_prediction(model_selection, img_b64):
-    API_URL_TF2180 = os.getenv("ENDPOINT_API-TF2180")
-    API_URL_TRANSFORMERS4524 = os.getenv("ENDPOINT_TRANSFORMERS4524")
+    API_URL_TF2180 = os.getenv("ENDPOINT_API_TF2180")
+    API_URL_TRANSFORMERS4524 = os.getenv("ENDPOINT_API_TRANSFORMERS4524")
     
     start_t = time.time()
     response = requests.post(
@@ -34,6 +34,7 @@ def get_prediction(model_selection, img_b64):
         st.write(f"⏳ INFERENCE TIME\t: {infer_time:.2f} seconds")
     else:
         st.error(f"API Error: {response.status_code}")
+        st.error(f"Message: {response.content}")
 
 
 if __name__ == "__main__":

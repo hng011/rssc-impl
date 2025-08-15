@@ -1,0 +1,15 @@
+services:
+  api1:
+    build: 
+      context: ./api-tf2180/app
+      dockerfile: Dockerfile.local
+    env_file: ./api-tf2180/app/.env.local
+    ports: 
+      - 8080:8080
+  api2:
+    build: 
+      context: ./api-transformers4524/app
+      dockerfile: Dockerfile.local
+    env_file: ./api-transformers4524/app/.env.local
+    ports: 
+      - 8081:8080

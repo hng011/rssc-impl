@@ -1,0 +1,17 @@
+FROM python:3.12.8
+
+WORKDIR /app
+
+COPY main.py .
+COPY utils.py .
+COPY models models/
+
+COPY requirements_local.txt .
+RUN pip install -r requirements_local.txt
+
+COPY init_local.sh .
+RUN chmod +x init_local.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["./init_local.sh"]
